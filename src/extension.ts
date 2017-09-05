@@ -1,5 +1,6 @@
 'use strict';
 
+import * as cp from 'child_process';
 import * as net from 'net';
 import * as path from 'path';
 import { workspace, DocumentFilter, ExtensionContext } from 'vscode';
@@ -12,25 +13,35 @@ export function activate(context: ExtensionContext) {
   console.log('Activating...');
 
   const serverConn = () : Thenable<StreamInfo> => {
+    const command = '/Users/bropa18/work/src/github.com/object88/langd/bin/langd';
+    const args = ['start'];
+
     let port = 9877;
+
     return new Promise((res, rej) => {
-      const client = net.createConnection({ port }, () => {
-        console.log('connected to server!');
-        res({ reader: client, writer: client });
+      const process = cp.spawn(command, args, {})
+
+      process.on('exit', (code, signal) => {
+        if (code !== 0 || signal !== null) {
+          const message = `Completed start command with code ${code} and signal ${signal}`;
+          rej(new Error(message))
+        }
+
+        const client = net.createConnection({ port }, () => {
+          console.log('connected to server!');
+          res({ reader: client, writer: client });
+        });
+        // client.on('data', (data) => {
+        //   console.log(data.toString());
+        //   client.end();
+        // });
+        client.on('end', () => {
+          console.log('disconnected from server');
+        });
       });
-      // client.on('data', (data) => {
-      //   console.log(data.toString());
-      //   client.end();
-      // });
-      client.on('end', () => {
-        console.log('disconnected from server');
-      });
-      return client;
     });
   }
 
-  const command = '/Users/bropa18/work/src/github.com/object88/langd/bin/langd';
-  const args = ['start'];
   const options: ExecutableOptions = { detached: true, stdio: 'ignore' };
 	let serverOptions: ServerOptions = serverConn;
 
