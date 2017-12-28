@@ -1,67 +1,69 @@
 {
-    "name": "langd-vscode",
-    "displayName": "langd-vscode",
-    "description": "",
-    "version": "0.0.1",
-    "publisher": "object88",
-    "engines": {
-        "vscode": "^1.15.0"
+  "name": "langd-vscode",
+  "displayName": "langd-vscode",
+  "description": "",
+  "version": "0.0.1",
+  "publisher": "object88",
+  "engines": {
+    "vscode": "^1.15.0"
+  },
+  "categories": [
+    "Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:go",
+    "onCommand:extension.sayHello"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.sayHello",
+        "title": "Hello World"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "langd",
+      "properties": {
+        "langd.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "messages",
+          "description": "Traces the communication between VSCode and the language server."
+        }
+      }
     },
-    "categories": [
-        "Languages"
-    ],
-    "activationEvents": [
-        "onLanguage:go",
-        "onCommand:extension.sayHello"
-    ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "commands": [
-            {
-                "command": "extension.sayHello",
-                "title": "Hello World"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "langd",
-            "properties": {
-                "langd.trace.server": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "off",
-                        "messages",
-                        "verbose"
-                    ],
-                    "default": "messages",
-                    "description": "Traces the communication between VSCode and the language server."
-                }
-            }
-        },
-        "languages": [
-            {
-                "id": "go",
-                "aliases": [
-                    "Go"
-                ]
-            }
+    "languages": [
+      {
+        "id": "go",
+        "aliases": [
+          "Go"
         ]
-    },
-    "scripts": {
-        "vscode:prepublish": "tsc -p ./",
-        "compile": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "dependencies": {
-        "vscode-languageclient": "^3.5.0"
-    },
-    "devDependencies": {
-        "@types/mocha": "^2.2.44",
-        "@types/node": "^6.0.93",
-        "mocha": "^2.3.3",
-        "typescript": "^2.6.2",
-        "vscode": "^1.1.10"
-    }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "dependencies": {
+    "@types/mocha": "^2.2.45",
+    "@types/node": "^6.0.95",
+    "vscode-languageclient": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^6.0.93",
+    "mocha": "^2.3.3",
+    "typescript": "^2.6.2",
+    "vscode": "^1.1.10"
+  }
 }
