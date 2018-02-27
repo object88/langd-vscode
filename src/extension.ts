@@ -3,8 +3,9 @@
 import * as cp from 'child_process';
 import * as net from 'net';
 import * as path from 'path';
-import { workspace, DocumentFilter, ExtensionContext } from 'vscode';
+import { workspace, Disposable, DocumentFilter, ExtensionContext } from 'vscode';
 import { ExecutableOptions, LanguageClient, LanguageClientOptions, SettingMonitor, ServerOptions, StreamInfo, TransportKind } from 'vscode-languageclient';
+import { Load, LoadController } from './load';
 
 export function activate(context: ExtensionContext) {
   // If the extension is launched in debug mode then the debug server options are used
@@ -55,9 +56,18 @@ export function activate(context: ExtensionContext) {
       fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
     }
   }
-  let disposable = new LanguageClient('langd', 'Language Daemon', serverOptions, clientOptions).start();
+  let langdClient = new LanguageClient('langd', 'Language Daemon', serverOptions, clientOptions);
+  let langdClientDisposable = langdClient.start();
 
-  context.subscriptions.push(disposable);
+  langdClient.onReady().then(() => {
+    let load = new Load()
+    let loadController = new LoadController(load, langdClient);
+  
+    context.subscriptions.push(loadController);
+    context.subscriptions.push(load);
+  })
+
+  context.subscriptions.push(langdClientDisposable);
 }
 
 // this method is called when your extension is deactivated
