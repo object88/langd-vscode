@@ -3,7 +3,7 @@
 import * as cp from 'child_process';
 import * as net from 'net';
 import * as path from 'path';
-import { workspace, Disposable, DocumentFilter, ExtensionContext } from 'vscode';
+import { window, workspace, Disposable, DocumentFilter, ExtensionContext } from 'vscode';
 import { ExecutableOptions, LanguageClient, LanguageClientOptions, SettingMonitor, ServerOptions, StreamInfo, TransportKind } from 'vscode-languageclient';
 import { Load, LoadController } from './load';
 
@@ -14,13 +14,31 @@ export function activate(context: ExtensionContext) {
   console.log('Activating...');
 
   const serverConn = () : Thenable<StreamInfo> => {
-    const command = '/Users/bropa18/work/src/github.com/object88/langd/bin/langd';
+    let editor = window.activeTextEditor;
+    const langdConfig = workspace.getConfiguration('langd', editor.document.uri);
+    const langdPath = langdConfig.server.path;
+    let command = 'langd';
+    if (!!langdPath) {
+      command = path.join(langdPath, 'langd');
+    }
     const args = ['start'];
 
     let port = 9877;
 
     return new Promise((res, rej) => {
-      const process = cp.spawn(command, args, {})
+      const options: cp.SpawnOptions = {
+        env: {
+          "LANGD_GRPC_PORT": 9876
+        }
+      }
+      const process = cp.spawn(command, args, options);
+
+      process.on('error', (err: Error) => {
+        if (err['code'] === "ENOENT") {
+          // Failed to find the binary; suggest setting the location.
+        }
+        console.log(err);
+      });
 
       process.on('exit', (code, signal) => {
         if (code !== 0 || signal !== null) {
@@ -51,7 +69,7 @@ export function activate(context: ExtensionContext) {
     documentSelector: ['go'],
     synchronize: {
       // Synchronize the setting section 'langd' to the server
-      configurationSection: 'langd',
+      configurationSection: ['langd', 'go'],
       // Notify the server about file changes to '.clientrc files contain in the workspace
       fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
     }

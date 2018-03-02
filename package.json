@@ -26,6 +26,24 @@
       "type": "object",
       "title": "langd",
       "properties": {
+        "langd.server.grpcPort": {
+          "scope": "window",
+          "type": "number",
+          "default": 9877,
+          "description": "The port to be used for gRPC calls to the Langd service."
+        },
+        "langd.server.jsonPort": {
+          "scope": "window",
+          "type": "number",
+          "default": 9876,
+          "description": "The port to be used for JSON RPC calls to the Langd service."
+        },
+        "langd.server.path": {
+          "scope": "window",
+          "type": "string",
+          "default": "",
+          "description": "Path to the Langd binary."
+        },
         "langd.trace.server": {
           "scope": "window",
           "type": "string",
